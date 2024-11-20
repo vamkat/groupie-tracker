@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{.Artist.Name}} - Artist Details</title>
+        <link rel="stylesheet" href="/static/styles.css">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    </head>
+    <body>
+        {{template "header.html" .}}
+
+        <!-- Artist Detail Card -->
+        <div class="card">
+            <div class="card-header">
+                <h1 class="artist-name">{{.Artist.Name}}</h1>
+            </div>
+            <div class="card-body">
+                <div class="artist-info">
+                    <img src="{{.Artist.Image}}" alt="{{.Artist.Name}}" style="width: 300px; height: 300px; object-fit: cover; border-radius: 10px;">
+                    <div class="artist-details">
+                        <h3>Members:</h3>
+                        <ul>
+                            {{range .Artist.Members}}
+                                <li>{{.}}</li>
+                            {{else}}
+                                <li>No members listed</li>
+                            {{end}}
+                        </ul>
+
+                        <h3>Creation Date:</h3>
+                        <p>{{.Artist.CreationDate}}</p>
+                    
+                        <h3>First Album:</h3>
+                        <p>{{.Artist.FirstAlbum}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="card">
+            <div class="card-body">
+            <!-- Links at the bottom of the card -->
+            
+                <div class="btn-group">
+                <a href="/artist_details/{{.Artist.ID}}/locations" 
+                class="btn {{if eq .Section "locations"}}active{{end}}">
+                Locations
+                 </a>
+                <a href="/artist_details/{{.Artist.ID}}/dates" 
+                class="btn {{if eq .Section "dates"}}active{{end}}">
+                Dates
+                </a>
+                <a href="/artist_details/{{.Artist.ID}}/concerts" 
+                class="btn {{if eq .Section "concerts"}}active{{end}}">
+                Concerts
+                 </a>
+                 </div>
+
+
+
+            <!-- Conditional Sections (Locations, Dates, Concerts) -->
+            <div class="artist-info">
+            
+                {{if eq .Section "locations"}}
+                    <div class="artist-details">
+                        
+                        <ul>
+                            {{range .Artist.Locations}}
+                                <li>{{.}}</li>
+                            {{else}}
+                                <li>No locations listed</li>
+                            {{end}}
+                        </ul>
+                    </div>
+                {{else if eq .Section "dates"}}
+                    <div class="artist-details">
+                        
+                        <ul>
+                            {{range .Artist.Dates}}
+                                <li>{{.}}</li>
+                            {{else}}
+                                <li>No dates listed</li>
+                            {{end}}
+                        </ul>
+                    </div>
+                {{else if eq .Section "concerts"}}
+                    <div class="artist-details">
+                        
+                        {{range $relation, $concerts := .Artist.Relations}}
+                            <h4>{{ $relation }}</h4>
+                            <ul>
+                                {{range $concerts}}
+                                    <li>{{.}}</li>
+                                {{else}}
+                                    <li>No concerts listed</li>
+                                {{end}}
+                            </ul>
+                        {{else}}
+                            <p>No concerts listed</p>
+                        {{end}}
+                    </div>
+                {{end}}
+            </div>  
+        </div>
+</div>
+
+        {{template "footer.html" .}}
+
+    </body>
+</html>

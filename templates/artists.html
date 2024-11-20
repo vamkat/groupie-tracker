@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Groupie Tracker - Artists</title>
+        
+        <link rel="stylesheet" href="/static/styles.css">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+      
+    </head>
+    <body>
+        {{template "header.html" .}}
+
+         <!-- Filters Section -->
+         <div class="filters-container">
+            <form action="#" method="get">
+                
+                    <div class="filter-items-container">
+                <!-- Filter by Creation Date -->
+                <div class="filter-item">
+                    <label for="creation_date">Filter by Creation Date:</label>
+                    <input type="range" id="creation_date" name="creation_date" min="1970" max="2020" value="2000" step="1">
+                    <span id="creation_date_output">2000</span>
+                </div>
+
+                <!-- Filter by First Album Date -->
+                <div class="filter-item">
+                    <label for="first_album_date">Filter by First Album Date:</label>
+                    <input type="range" id="first_album_date" name="first_album_date" min="1970" max="2020" value="2000" step="1">
+                    <span id="first_album_date_output">2000</span>
+                </div>
+
+                <!-- Filter by Number of Members -->
+                <div class="filter-item">
+                    <label>Filter by Number of Members:</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="members_1" name="members" value="1">
+                        <label for="members_1">1</label>
+
+                        <input type="checkbox" id="members_2" name="members" value="2">
+                        <label for="members_2">2</label>
+
+                        <input type="checkbox" id="members_3" name="members" value="3">
+                        <label for="members_3">3</label>
+
+                        <input type="checkbox" id="members_4" name="members" value="4">
+                        <label for="members_4">4</label>
+
+                        <input type="checkbox" id="members_5" name="members" value="5">
+                        <label for="members_5">5</label>
+
+                        <input type="checkbox" id="members_6" name="members" value="6">
+                        <label for="members_6">6</label>
+
+                        <input type="checkbox" id="members_7" name="members" value="7">
+                        <label for="members_7">7</label>
+                    </div>
+                </div>
+
+                <!-- Filter by Concert Locations -->
+                <div class="filter-item">
+                    <label for="location">Filter by Concert Locations:</label>
+                    <select id="location" name="location">
+                        <option value="">Select Location</option>
+                        <option value="North America">North America</option>
+                        <option value="Europe">Europe</option>
+                        <option value="Asia">Asia</option>
+                        <option value="South America">South America</option>
+                        <option value="Australia">Australia</option>
+                    </select>
+                </div>
+            </div>
+                <!-- Filter Submit Button -->
+                <button type="submit" class="button">Apply Filters</button>
+            </form>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            {{range .}}
+                <div>
+                    <a href="/artist_details/{{.ID}}">
+                        <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+                        <h3>{{.Name}}</h3>
+                    </a>
+                </div>
+            {{else}}
+                <p>No artists found</p>
+            {{end}}
+        </div>
+
+        {{template "footer.html" .}}
+
+        <!-- Add JavaScript to display slider values dynamically -->
+        <script>
+            // Update the span when slider changes
+            document.getElementById("creation_date").addEventListener("input", function() {
+                document.getElementById("creation_date_output").textContent = this.value;
+            });
+
+            document.getElementById("first_album_date").addEventListener("input", function() {
+                document.getElementById("first_album_date_output").textContent = this.value;
+            });
+        </script>
+    </body>
+</html>

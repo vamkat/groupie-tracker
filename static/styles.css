@@ -1,0 +1,317 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+h1, h3, p {
+    margin: 10px 0;
+}
+
+
+
+  /* Header styles */
+  header {
+    background-color: white;
+    color: #2c3e50;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+}
+
+nav a {
+    color: #2c3e50;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+    padding: 8px 12px;
+}
+
+nav a:hover {
+    background-color: #ecf0f1;
+    border-radius: 5px;
+}
+
+/* Page content */
+.content {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.content div {
+    width: 200px;
+    margin: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Images as links */
+.content a img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    transition: opacity 0.3s ease;
+}
+
+.content a:hover img {
+    opacity: 0.5;
+}
+
+
+.content h3 a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.content h3 a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: bottom;
+    width: 100%;
+    bottom: 0;
+}
+
+/* Card Container */
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    padding-bottom: 20px;
+    max-width: 500px;
+    overflow: hidden; /* Ensure content stays within rounded corners */
+}
+
+/* Header Section */
+.card-header {
+    background-color: #ffffff;
+    color: rgb(50, 56, 90);
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    text-align: center;
+}
+
+.artist-name {
+    font-size: 2em;
+    margin: 0;
+}
+
+/* Image styling */
+.artist-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    
+}
+
+/* Artist Details Section */
+.artist-info {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-left:30px;
+    padding:10;
+}
+
+.artist-details {
+    flex: 1;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .artist-info {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .artist-image {
+        width: 100%;
+        height: auto;
+    }
+}
+
+
+/* Button styling */
+.btn-group {
+    display: flex;             /* Use Flexbox to arrange buttons horizontally */
+    justify-content: center;  /* Distribute buttons evenly */
+    gap: 20px;                 /* Space between buttons */
+    margin-top: 20px;          /* Add margin above the button group */
+}
+
+
+.btn {
+    display: inline-block;      /* Ensure the button is inline */
+    padding: 10px 20px;         /* Add padding to make the button more clickable */
+    font-size: 16px;            /* Set a readable font size */
+    font-weight: bold;          /* Make the button text bold */
+    color: #333;                /* Dark text color for readability */
+    background-color: #f1f1f1; /* Light background color for the button */
+    border: 2px solid #ddd;    /* Subtle border around the button */
+    border-radius: 4px;        /* Slightly rounded corners */
+    text-align: center;         /* Center text inside the button */
+    text-decoration: none;      /* Remove any underline or link-style decoration */
+    cursor: pointer;           /* Pointer cursor to indicate clickable elements */
+    transition: background-color 0.3s, color 0.3s; /* Smooth hover effects */
+}
+
+/* Hover effect */
+.btn:hover {
+    background-color: #007bff; /* Change background to blue on hover */
+    color: white;              /* Change text color to white */
+    border-color: #007bff;     /* Match border color to background on hover */
+}
+
+/* Active button (highlighted) */
+.btn.active {
+    background-color: #007bff; /* Active state background color */
+    color: white;              /* Active state text color */
+    border-color: #007bff;     /* Active state border color */
+}
+
+/* Responsive styling - on smaller screens, stack buttons vertically */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column; /* Stack buttons vertically on smaller screens */
+        gap: 10px;              /* Add more space between buttons */
+    }
+}
+
+/* Filters Container */
+.filters-container {
+    display: flex;
+    flex-wrap: column; /* Allows items to wrap to the next line if needed */
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* Filter Items Container */
+.filters-items-container {
+    display: flex;
+    flex-wrap: row; 
+    justify-content: space-between; /* Spacing between filter items */
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    max-width: 80%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* Individual Filter Item */
+.filter-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 10px;
+    width: 25%; /* Set width to 30% for side-by-side layout */
+
+}
+
+/* Ensures labels inside filter items are styled correctly */
+.filter-item label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Range Slider Styling */
+.filter-item input[type="range"] {
+    width: 100%;
+    margin: 5px 0 10px;
+}
+
+/* Checkbox group for number of members */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.checkbox-group label {
+    margin-right: 10px;
+}
+
+/* Location Dropdown Styling */
+.filter-item select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+
+/* Button Styling */
+.filters-container .button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.filters-container .button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;  /* Stack filters vertically on small screens */
+    }
+
+    .filter-item {
+        width: 100%; /* Filters take full width on smaller screens */
+    }
+
+    .checkbox-group {
+        flex-direction: column; /* Stack checkboxes vertically on small screens */
+    }
+}
