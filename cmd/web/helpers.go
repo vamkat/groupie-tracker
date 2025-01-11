@@ -3,22 +3,42 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
 
+// serverError writes an error message and stack trace to the errorlog,
+// then sends a generic 500 response to the user
+func (app *application) serverError(w http.ResponseWriter, err error) {
+	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
+	//use Output instead of Print so that the calldepth is 2 (skipping this function in the trace)
+	app.errorLog.Output(2, trace)
+	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
+// clientError spends a specific status code and description to the user.
+func (app *application) clientError(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
+
+// wrapper for clientError that sends a 404 notFound response
+func (app *application) notFound(w http.ResponseWriter) {
+	app.clientError(w, http.StatusNotFound)
+}
+
 // executeTemplate executes the given template to the buffer first,
 // then copies the buffer to ResponseWriter. This way if an error happens
 // during execution it returns immediately instead of half loading the page
-func executeTemplate(w http.ResponseWriter, templateName string, data interface{}) {
+func (app *application) executeTemplate(w http.ResponseWriter, templateName string, data interface{}) {
 	// Write to buffer first
 	buf := new(bytes.Buffer)
 	err := tmpl.ExecuteTemplate(buf, templateName, data)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -74,4 +94,16 @@ func validateURL(url string) (id, section string, err error) {
 	}
 
 	return
+}
+
+// this blocks directory listing for the static folder, but doesn't block access
+// to individual files if the user knows the exact path
+func neuter(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Groupie Tracker - Artists</title>
+        
+        <link rel="stylesheet" href="/static/styles.css">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+      
+    </head>
+    
+    <body>
+        {{template "header.html" .}}
+        <div class="page-wrapper"></div>
+        <div class="page-layout">
+            <form id="filterForm" class="filter-card" method="GET">
+                <div class="filter-section">
+                    <h3>Number of Members</h3>
+                    <div class="checkbox-group" id="memberCheckboxes">
+                        {{ range $i := iterate 1 .FilterData.MaxMembers }}
+                            <label>
+                                <input type="checkbox" name="members" value="{{ $i }}">
+                                {{ $i }} {{ if eq $i 1 }}member{{ else }}members{{ end }}
+                            </label>
+                        {{ end }}
+                    </div>
+                </div>
+        
+                <div class="filter-section">
+                    <h3>Album Period</h3>
+                    <div class="range-slider">
+                        <div class="slider-track"></div>
+                        <input type="range" 
+                               class="min-slider"
+                               id="minAlbum" 
+                               name="minAlbum" 
+                               min="{{ .FilterData.MinAlbum }}" 
+                               max="{{ .FilterData.MaxAlbum }}" 
+                               value="{{ .FilterData.MinAlbum }}">
+                        <input type="range" 
+                               class="max-slider"
+                               id="maxAlbum" 
+                               name="maxAlbum" 
+                               min="{{ .FilterData.MinAlbum }}" 
+                               max="{{ .FilterData.MaxAlbum }}" 
+                               value="{{ .FilterData.MaxAlbum }}">
+                        <div class="range-values">
+                            <span id="minAlbumValue"></span> - <span id="maxAlbumValue"></span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="filter-section">
+                    <h3>Creation Period</h3>
+                    <div class="range-slider">
+                        <div class="slider-track"></div>
+                        <input type="range" 
+                               class="min-slider"
+                               id="minCreation" 
+                               name="minCreation" 
+                               min="{{ .FilterData.MinCreation }}" 
+                               max="{{ .FilterData.MaxCreation }}" 
+                               value="{{ .FilterData.MinCreation }}">
+                        <input type="range" 
+                               class="max-slider"
+                               id="maxCreation" 
+                               name="maxCreation" 
+                               min="{{ .FilterData.MinCreation }}" 
+                               max="{{ .FilterData.MaxCreation }}" 
+                               value="{{ .FilterData.MaxCreation }}">
+                        <div class="range-values">
+                            <span id="minCreationValue"></span> - <span id="maxCreationValue"></span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="filter-section">
+                    <h3>Location</h3>
+                    <select id="countrySelect" name="country" data-cities="{{ .FilterData.Locations }}">
+                        <option value="">Select Country</option>
+                        {{ range $country, $cities := .FilterData.Locations }}
+                            <option value="{{ $country }}">{{ $country }}</option>
+                        {{ end }}
+                    </select>
+                    
+                    <select id="citySelect" name="city" disabled>
+                        <option value="">Select City</option>
+                    </select>
+                </div>
+        
+                <button type="submit">Apply Filters</button>
+            </form>
+        
+        <!-- Main Content -->
+        <div class="content">
+            {{range .Artists}}
+                <div>
+                    <a href="/artist_details/{{.ID}}">
+                        <img src="{{.Image}}" alt="{{.Name}}" loading="lazy">
+                        <h3>{{.Name}}</h3>
+                    </a>
+                </div>
+            {{else}}
+                <p>No artists found</p>
+            {{end}}
+        </div>
+</div>
+        {{template "footer.html" .}}
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+    // Range slider handlers
+    function updateRangeSliders(minId, maxId, minValueId, maxValueId) {
+        const minSlider = document.getElementById(minId);
+        const maxSlider = document.getElementById(maxId);
+        const minValue = document.getElementById(minValueId);
+        const maxValue = document.getElementById(maxValueId);
+
+        function updateValues() {
+            minValue.textContent = minSlider.value;
+            maxValue.textContent = maxSlider.value;
+        }
+
+        minSlider.addEventListener('input', function() {
+            if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
+                minSlider.value = maxSlider.value;
+            }
+            updateValues();
+        });
+
+        maxSlider.addEventListener('input', function() {
+            if (parseInt(maxSlider.value) < parseInt(minSlider.value)) {
+                maxSlider.value = minSlider.value;
+            }
+            updateValues();
+        });
+
+        updateValues();
+    }
+
+    // Initialize range sliders
+    updateRangeSliders('minAlbum', 'maxAlbum', 'minAlbumValue', 'maxAlbumValue');
+    updateRangeSliders('minCreation', 'maxCreation', 'minCreationValue', 'maxCreationValue');
+
+    // Location dropdowns handler
+    const countrySelect = document.getElementById('countrySelect');
+    const citySelect = document.getElementById('citySelect');
+    const citiesData = {{ .FilterData.Locations }};
+
+    countrySelect.addEventListener('change', function() {
+        citySelect.innerHTML = '<option value="">Select City</option>';
+        
+        if (this.value) {
+            citySelect.disabled = false;
+            const cities = citiesData[this.value] || [];
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        } else {
+            citySelect.disabled = true;
+        }
+    });
+});
+            </script>
+            
+    </body>
+</html>

@@ -10,7 +10,7 @@ import (
 // GetLocations gets the locations for a specific artist ID from the API.
 // After reformatting them, it returns them as a slice of string.
 // It returns an error if the process fails at any point, or nil if it succeeds.
-func GetLocations(id string) ([]string, error) {
+func GetLocations(id string) ([]*Location, error) {
 
 	//local struct to unmarshal into
 	type Locations struct {
@@ -32,12 +32,18 @@ func GetLocations(id string) ([]string, error) {
 		return nil, fmt.Errorf("could not parse locations: %v", err)
 	}
 
+	var formattedLocations []*Location
 	// reformat the received locations
 	for i := range locations.Locations {
-		locations.Locations[i] = formatLocationString(locations.Locations[i])
+
+		city, country := formatLocationString(locations.Locations[i])
+		formattedLocations = append(formattedLocations, &Location{
+			Country: country,
+			City:    city,
+		})
 	}
 
-	return locations.Locations, nil
+	return formattedLocations, nil
 }
 
 // GetDates gets the dates for a specific artist ID from the API and returns them.
@@ -60,6 +66,12 @@ func GetDates(id string) ([]string, error) {
 	var dates Dates
 	if err := json.NewDecoder(resp.Body).Decode(&dates); err != nil {
 		return nil, fmt.Errorf("could not parse dates: %v", err)
+	}
+
+	//remove stars
+	for i, date := range dates.Dates {
+		dates.Dates[i] = strings.TrimLeft(date, "*")
+
 	}
 
 	return dates.Dates, nil
@@ -99,7 +111,8 @@ func formatRelations(relations map[string][]string) map[string][]string {
 	formattedMap := make(map[string][]string)
 	for key, dates := range relations {
 		// Transform the key
-		newKey := formatLocationString(key)
+		city, country := formatLocationString(key)
+		newKey := city + ", " + country
 		// Insert the transformed key-value pair into the new map
 		formattedMap[newKey] = dates
 	}
@@ -110,24 +123,28 @@ func formatRelations(relations map[string][]string) map[string][]string {
 // It replaces underscores with spaces and dashes with commas.
 // It capitalizes all words as they are place names.
 // In the specific cases of USA and UK it turns the whole word to uppercase.
-func formatLocationString(s string) string {
+func formatLocationString(s string) (string, string) {
 	s = strings.ReplaceAll(s, "_", " ")
-	s = strings.ReplaceAll(s, "-", ", ")
+	separatedS := strings.Split(s, "-")
 
 	// Handle edge cases for "Uk" and "Usa"
-	words := strings.Fields(s)
-	for j, word := range words {
-		if word == "uk" {
-			words[j] = "UK"
-		} else if word == "usa" {
-			words[j] = "USA"
-		} else {
-			words[j] = strings.Title(words[j])
+	//and capitalize all names
+	for i := range separatedS {
+		words := strings.Fields(separatedS[i])
+		for j, word := range words {
+			if words[j] == "uk" {
+				words[j] = "UK"
+			} else if word == "usa" {
+				words[j] = "USA"
+			} else {
+				words[j] = strings.Title(words[j])
+			}
 		}
+
+		// Join the words back into a single string
+		separatedS[i] = strings.Join(words, " ")
 	}
-
-	// Join the words back into a single string
-	s = strings.Join(words, " ")
-
-	return s
+	city := separatedS[0]
+	country := separatedS[1]
+	return city, country
 }
