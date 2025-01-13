@@ -52,8 +52,6 @@ func main() {
 	// Get the values needed for the filters
 	app.getFilterValues()
 
-	//preParse()
-
 	//initialize new http.Server struct so that it uses our custom errorLog
 	srv := &http.Server{
 		Addr:     *port,

@@ -15,8 +15,7 @@ import (
 // then sends a generic 500 response to the user
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	//use Output instead of Print so that the calldepth is 2 (skipping this function in the trace)
-	app.errorLog.Output(2, trace)
+	app.errorLog.Print(trace)
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 

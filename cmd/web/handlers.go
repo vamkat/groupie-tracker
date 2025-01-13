@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -14,6 +15,7 @@ func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+
 	// Lock the mutex for reading the artists data
 	app.mu.RLock()
 	artists := app.artists
@@ -22,10 +24,27 @@ func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
 
 	// If there are no artists (for any reason), return an error
 	if len(artists) == 0 {
-		app.serverError(w, nil)
+		err := errors.New("no artists found")
+		app.serverError(w, err)
 		return
 	}
 
+	//read queries
+	queryParams := r.URL.Query()
+	if len(queryParams) > 0 {
+		membersList, minAlbum, maxAlbum, minCreation, maxCreation, country, city, err := app.handleQuery(queryParams)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		artists, err = app.executeFilters(membersList, minAlbum, maxAlbum, minCreation, maxCreation, country, city)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+	}
+
+	//send data to template
 	data := struct {
 		Artists     []*groupietracker.ArtistDetails
 		LastUpdated time.Time
