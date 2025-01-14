@@ -46,7 +46,7 @@ func main() {
 		errorLog.Printf("Error fetching artists data: %v", err)
 	}
 
-	// Start the background task to refresh the artists data
+	// Start a go routine to refresh the artists data periodically
 	go app.refreshArtistsData()
 
 	// Get the values needed for the filters
@@ -65,7 +65,7 @@ func main() {
 }
 
 func init() {
-	// Create the function map first
+	// Create a function map (for use in the templates for filters)
 	funcMap := template.FuncMap{
 		"iterate": func(start, end int) []int {
 			var result []int

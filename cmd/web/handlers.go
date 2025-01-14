@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"groupie.tracker.filters/internal/groupietracker"
@@ -22,7 +23,7 @@ func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
 	lastUpdated := app.lastUpdated // Get the last updated time
 	app.mu.RUnlock()
 
-	// If there are no artists (for any reason), return an error
+	// If there are no artists return a server error
 	if len(artists) == 0 {
 		err := errors.New("no artists found")
 		app.serverError(w, err)
@@ -34,7 +35,7 @@ func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
 	if len(queryParams) > 0 {
 		membersList, minAlbum, maxAlbum, minCreation, maxCreation, country, city, err := app.handleQuery(queryParams)
 		if err != nil {
-			app.serverError(w, err)
+			app.clientError(w, http.StatusBadRequest)
 			return
 		}
 		artists, err = app.executeFilters(membersList, minAlbum, maxAlbum, minCreation, maxCreation, country, city)
@@ -66,16 +67,15 @@ func (app *application) artistDetailsPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Fetch the artist details from the API
-	artistDetails, err := groupietracker.GetArtistDetails(id)
-	if err != nil {
-		if err.Error() == "not found" {
-			app.notFound(w)
-			return
-		} else {
-			app.serverError(w, err)
-			return
+	var artistDetails *groupietracker.ArtistDetails
+	for _, artist := range app.artists {
+		if id == strconv.Itoa(artist.ID) {
+			artistDetails = artist
 		}
+	}
+	if artistDetails == nil {
+		app.notFound(w)
+		return
 	}
 
 	// the struct sent to the template will now include both ArtistDetails and section

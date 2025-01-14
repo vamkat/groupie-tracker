@@ -150,7 +150,7 @@ func (app *application) executeFilters(membersList []int, minAlbum, maxAlbum, mi
 	// find all ids that much all the criteria
 	var filteredArtists []*groupietracker.ArtistDetails
 	for _, artist := range app.artists {
-		//check for matchig members (automatic true if no members filter was used)
+		//check for matching members (automatic true if no members filter was used)
 		var membersMatch bool
 		if len(membersList) > 0 {
 			for _, membersNum := range membersList {
