@@ -6,6 +6,8 @@
         <title>{{.Artist.Name}} - Artist Details</title>
         <link rel="stylesheet" href="/static/styles.css">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     </head>
     <body>
         {{template "header.html" .}}
@@ -72,6 +74,43 @@
                                 <li>No locations listed</li>
                             {{end}}
                         </ul>
+                        <!-- Map Container -->
+<div id="map" style="height: 400px; margin-top: 20px;"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map, with a default view
+        var map = L.map('map').setView([51.505, -0.09], 2); // Default center (London) and zoom level 2
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Create a LatLngBounds object to hold the bounds of the markers
+        var bounds = L.latLngBounds();
+
+        // Add markers for each location passed from Go
+        {{range .Artist.Locations}}
+            {{if .Coordinates}}  <!-- Ensure Coordinates exists -->
+                var lat = parseFloat("{{.Coordinates.Lat}}");  // Parse string to float
+                var lon = parseFloat("{{.Coordinates.Lon}}");  // Parse string to float
+                var city = "{{.City}}, {{.Country}}";  // Location address
+
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    var marker = L.marker([lat, lon])
+                        .addTo(map)
+                        .bindPopup("<b>" + city + "</b>");
+                    
+                    // Extend the bounds to include this marker
+                    bounds.extend([lat, lon]);
+                }
+            {{end}}
+        {{end}}
+
+        // Fit the map to the bounds of the markers
+        map.fitBounds(bounds);
+    });
+</script>
                     </div>
                 {{else if eq .Section "dates"}}
                     <div class="artist-details">

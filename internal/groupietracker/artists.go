@@ -24,28 +24,10 @@ type ArtistDetails struct {
 }
 
 type Location struct {
-	Country string
-	City    string
+	Country     string
+	City        string
+	Coordinates *GeocodeResponse
 }
-
-// // GetAllArtists returns a slice of all artists read from the API. The Artist struct includes ID, name and image.
-// // It also returns an error if the process of getting the data from the API fails at any step, or nil if it succeeds.
-// func GetAllArtists() ([]Artist, error) {
-// 	resp, err := http.Get(baseURL + endpointArtists)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("could not fetch artists: %v", err)
-// 	}
-
-// 	defer resp.Body.Close()
-
-// 	// Read the response body and unmarshal into a slice of Artist
-// 	var artists []Artist
-// 	if err := json.NewDecoder(resp.Body).Decode(&artists); err != nil {
-// 		return nil, fmt.Errorf("could not parse artists: %v", err)
-// 	}
-
-// 	return artists, nil
-// }
 
 func GetAllArtistsDetails() ([]*ArtistDetails, error) {
 	resp, err := http.Get(baseURL + endpointArtists)

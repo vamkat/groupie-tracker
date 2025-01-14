@@ -52,7 +52,7 @@ func (app *application) executeTemplate(w http.ResponseWriter, templateName stri
 
 // validateURL checks that the URL for artist_details.html is valid
 // invalid formats include no artist id, no valid artist id, invalid section name
-func validateURL(url string) (id, section string, err error) {
+func validateURL(url string) (id int, section string, err error) {
 
 	// Remove the prefix to get everything after /artist_details/
 	path := strings.TrimPrefix(url, "/artist_details/")
@@ -74,8 +74,7 @@ func validateURL(url string) (id, section string, err error) {
 	}
 
 	// Get the ID and validate it's a number
-	id = parts[0]
-	if _, err = strconv.Atoi(id); err != nil {
+	if id, err = strconv.Atoi(parts[0]); err != nil {
 		// ID is not a valid number
 		err = errors.New("artist ID not a valid number")
 		return

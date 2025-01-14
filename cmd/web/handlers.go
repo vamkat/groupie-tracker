@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"net/http"
-	"strconv"
 	"time"
 
 	"groupie.tracker.filters/internal/groupietracker"
@@ -11,6 +10,17 @@ import (
 
 // handlers are application methods in order to use custom logging
 func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		// Catch any panic that might occur
+		if err := recover(); err != nil {
+			// Log the panic for debugging
+			app.infoLog.Printf("Recovered from panic in artistsPage: %v", err)
+
+			// Respond with a 500 Internal Server Error
+			app.serverError(w, errors.New("internal server error"))
+		}
+	}()
+
 	// return 404 if invalid URL
 	if r.URL.Path != "/" {
 		app.notFound(w)
@@ -60,6 +70,17 @@ func (app *application) artistsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) artistDetailsPage(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		// Catch any panic that might occur
+		if err := recover(); err != nil {
+			// Log the panic for debugging
+			app.infoLog.Printf("Recovered from panic in artistDetailsPage: %v", err)
+
+			// Respond with a 500 Internal Server Error
+			app.serverError(w, errors.New("internal server error"))
+		}
+	}()
+
 	// if invalid url return 404
 	id, section, err := validateURL(r.URL.Path)
 	if err != nil {
@@ -68,8 +89,14 @@ func (app *application) artistDetailsPage(w http.ResponseWriter, r *http.Request
 	}
 
 	var artistDetails *groupietracker.ArtistDetails
-	for _, artist := range app.artists {
-		if id == strconv.Itoa(artist.ID) {
+	for i, artist := range app.artists {
+		if id == artist.ID {
+			if section == "locations" && app.artists[i].Locations[0].Coordinates == nil { //do not fetch again if already fetched
+				//get geocoding information for all locations
+
+				app.getCoordinates(i)
+
+			}
 			artistDetails = artist
 		}
 	}

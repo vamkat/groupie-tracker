@@ -6,4 +6,5 @@ const (
 	endpointLocations = "/locations"
 	endpointDates     = "/dates"
 	endpointRelation  = "/relation"
+	nominatimAPI      = "https://nominatim.openstreetmap.org/search"
 )
