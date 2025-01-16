@@ -75,43 +75,74 @@
                             {{end}}
                         </ul>
                         <!-- Map Container -->
-<div id="map" style="height: 400px; margin-top: 20px;"></div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize map, with a default view
-        var map = L.map('map').setView([51.505, -0.09], 2); // Default center (London) and zoom level 2
-
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Create a LatLngBounds object to hold the bounds of the markers
-        var bounds = L.latLngBounds();
-
-        // Add markers for each location passed from Go
-        {{range .Artist.Locations}}
-            {{if .Coordinates}}  <!-- Ensure Coordinates exists -->
-                var lat = parseFloat("{{.Coordinates.Lat}}");  // Parse string to float
-                var lon = parseFloat("{{.Coordinates.Lon}}");  // Parse string to float
-                var city = "{{.City}}, {{.Country}}";  // Location address
-
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    var marker = L.marker([lat, lon])
-                        .addTo(map)
-                        .bindPopup("<b>" + city + "</b>");
+                        <div class="map-container">
+                            <div id="loading-overlay" class="loading-overlay">
+                                <div class="loading-message">
+                                    Loading location data...
+                                    <br>
+                                    <small>Please wait while we fetch the coordinates</small>
+                                </div>
+                            </div>
+                            <div id="map"></div>
+                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var map = L.map('map').setView([51.505, -0.09], 2);
+                                
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                }).addTo(map);
+                            
+                                async function loadLocations() {
+                                    try {
+                                        const response = await fetch('/api/artist-locations?id={{.Artist.ID}}');
+                                        if (!response.ok) {
+                                            throw new Error('Failed to fetch locations');
+                                        }
+                                        
+                                        const locations = await response.json();
+                                        const bounds = L.latLngBounds();
+                                        let hasValidMarkers = false;
+                                        
+                                        locations.forEach(location => {
+                                            if (location.Coordinates) {
+                                                const lat = parseFloat(location.Coordinates.lat);
+                                                const lon = parseFloat(location.Coordinates.lon);
+                                                const city = `${location.City}, ${location.Country}`;
+                                                
+                                                if (!isNaN(lat) && !isNaN(lon)) {
+                                                    const marker = L.marker([lat, lon])
+                                                        .addTo(map)
+                                                        .bindPopup(`<b>${city}</b>`);
+                                                    bounds.extend([lat, lon]);
+                                                    hasValidMarkers = true;
+                                                }
+                                            }
+                                        });
+                                        
+                                        // Remove loading overlay
+                                        document.getElementById('loading-overlay').style.display = 'none';
+                                        
+                                        // Only fit bounds if we have valid markers
+                                        if (hasValidMarkers) {
+                                            // Add a slight padding to the bounds
+                                            map.fitBounds(bounds, {
+                                                padding: [50, 50], // Add 50 pixels padding
+                                                maxZoom: 12 // Prevent too much zoom
+                                            });
+                                        }
+                                    } catch (error) {
+                                        console.error('Error loading locations:', error);
+                                        const loadingMessage = document.querySelector('.loading-message');
+                                        loadingMessage.innerHTML = 'Error loading map locations.<br>Please try again later.';
+                                        loadingMessage.style.color = '#dc3545'; // Red color for error
+                                    }
+                                }
+                            
+                                loadLocations();
+                            });
+                            </script>
                     
-                    // Extend the bounds to include this marker
-                    bounds.extend([lat, lon]);
-                }
-            {{end}}
-        {{end}}
-
-        // Fit the map to the bounds of the markers
-        map.fitBounds(bounds);
-    });
-</script>
-                    </div>
                 {{else if eq .Section "dates"}}
                     <div class="artist-details">
                         

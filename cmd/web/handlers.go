@@ -89,15 +89,11 @@ func (app *application) artistDetailsPage(w http.ResponseWriter, r *http.Request
 	}
 
 	var artistDetails *groupietracker.ArtistDetails
-	for i, artist := range app.artists {
+	for _, artist := range app.artists {
 		if id == artist.ID {
-			if section == "locations" && app.artists[i].Locations[0].Coordinates == nil { //do not fetch again if already fetched
-				//get geocoding information for all locations
 
-				app.getCoordinates(i)
-
-			}
 			artistDetails = artist
+			break
 		}
 	}
 	if artistDetails == nil {

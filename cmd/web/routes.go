@@ -12,6 +12,7 @@ func (app *application) routes() *http.ServeMux {
 
 	mux.HandleFunc("/", app.artistsPage)
 	mux.HandleFunc("/artist_details/", app.artistDetailsPage)
+	mux.HandleFunc("/api/artist-locations", app.getLocationsHandler)
 
 	return mux
 }
