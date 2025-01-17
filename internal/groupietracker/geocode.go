@@ -14,9 +14,16 @@ type GeocodeResponse struct {
 }
 
 func Geocode(country, city string) (*GeocodeResponse, error) {
+
 	//construct query parameters
 	params := url.Values{}
-	params.Add("q", country+" "+city)
+	if countrycode, ok := countryCodes[country]; ok {
+		params.Add("q", city)
+		params.Add("countrycodes", countrycode)
+	} else {
+		params.Add("q", country+"+"+city)
+	}
+
 	params.Add("format", "json")
 
 	//make the GET request to Nominatim API
