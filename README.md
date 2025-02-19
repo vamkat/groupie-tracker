@@ -1,5 +1,13 @@
  
-# Groupie Tracker - Filters
+# Groupie Tracker 
+
+## Description
+
+Groupie Tracker is a website that receives an API with music artist information, manipulates the data received and displays it for the user. It includes filtering functionality and uses a geocoding API to display locations on a map. 
+
+The server is written entirely in Go.
+
+This is a project from Zone01.
 
  ## How to run
  Start the server with this command:
